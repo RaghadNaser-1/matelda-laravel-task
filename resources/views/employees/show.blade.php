@@ -11,18 +11,19 @@
 
         <h2>Tasks</h2>
         <a href="{{ route('tasks.create', $employee->id) }}" class="btn btn-primary mb-3">Add New Task</a>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($employee->tasks as $task)
+ <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+        @forelse ($employee->tasks as $task)
+
                     <tr>
                         <td>{{ $task->id }}</td>
                         <td>{{ $task->title }}</td>
@@ -33,13 +34,16 @@
                             <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
                             </form>
                         </td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+        @empty
+        <tr><td colspan="5">No tasks found for this employee.</td></tr>
+        @endforelse
+          </tbody>
+            </table>
     </div>
 </div>
 @endsection

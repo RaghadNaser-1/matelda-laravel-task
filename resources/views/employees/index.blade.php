@@ -17,7 +17,7 @@
             </thead>
             <tbody>
                 @foreach ($employees as $employee)
-                    <tr>
+                    <tr id="employeeRow{{ $employee->id }}">
                         <td>{{ $employee->id }}</td>
                         <td>{{ $employee->name }}</td>
                         <td>{{ $employee->phone }}</td>
@@ -28,8 +28,9 @@
                             <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
                             </form>
+                            <button class="btn btn-danger btn-sm delete-btn" data-employee-id="{{ $employee->id }}">Delete using JS</button>
                         </td>
                     </tr>
                 @endforeach
@@ -37,4 +38,40 @@
         </table>
     </div>
 </div>
+<script>
+    // Attach event listeners to all "Delete using JS" buttons
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const employeeId = this.getAttribute('data-employee-id');
+
+            if (confirm('Are you sure you want to delete this record?')) {
+                // Make an AJAX request to delete the employee
+                fetch(`/employees/${employeeId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // If the deletion was successful, remove the row from the table
+                        const employeeRow = document.getElementById(`employeeRow${employeeId}`);
+                        employeeRow.remove();
+                    } else {
+                        // alert('Failed to delete the employee.');
+                        alert('Please reload your page');
+
+                    }
+                })
+                .catch(error => {
+                    alert('An error occurred while deleting the employee.');
+                    console.error(error);
+                });
+            }
+        });
+    });
+</script>
+
 @endsection

@@ -67,5 +67,16 @@ class EmployeeController extends Controller
 
         return redirect()->route('employees.index')->with('success', 'Employee deleted successfully');
     }
+
+    public function destroyAjax($id)
+    {
+        try {
+            $employee = Employee::findOrFail($id);
+            $employee->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete the employee.']);
+        }
+    }
 }
 
